@@ -94,3 +94,15 @@ df.to_csv('./Crawling_Data/reviews_550_.csv'.format(today), index=False)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
