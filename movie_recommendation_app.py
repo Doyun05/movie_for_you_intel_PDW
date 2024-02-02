@@ -38,11 +38,12 @@ class Exam(QWidget, form_window):
 
 
     def btn_slot(self):
-        key_word = self.le_ketword.text()
+        key_word = self.le_keyword.text()
         if key_word in self.titles:
             recommendation = self.recommendatio_by_movie_title(key_word)
         else:
             recommendation = self.recommendation_by_keyword(key_word)
+
         if recommendation:
             self.lbl_recommendation.setText(recommendation)
 
@@ -74,8 +75,8 @@ class Exam(QWidget, form_window):
         print(setence)
         setence_vec = self.Tfidf.transform([setence])
         cosine_sim = linear_kernel(setence_vec, self.Tfidf_matrix)
-        recommendation = '\n'.join(list(recommendation))
         recommendation = self.getRecommendation(cosine_sim)
+        recommendation = '\n'.join(list(recommendation))
         return recommendation
 
 
