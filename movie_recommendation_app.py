@@ -42,7 +42,7 @@ class Exam(QWidget, form_window):
         print('debug02')
 
     def recommendation_by_keyword(self, key_word):
-        sim_word = self.embedding_model.wv.most_similar(keyword, topn=10)
+        sim_word = self.embedding_model.wv.most_similar(key_word, topn=10)
         words = [key_word]
         for word, _ in sim_word:
             words.append(word)
