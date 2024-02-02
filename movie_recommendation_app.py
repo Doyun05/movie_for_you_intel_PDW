@@ -26,14 +26,24 @@ class Exam(QWidget, form_window):
         for title in self.titles:
             self.comboBox.addItem(title)
 
+        model = QStringListModel()
+        model.setStringList(self.titles)
+        completer = QCompleter()
+        completer.setModel(model)
+        self.le_keyword.setCompleter(completer)
+
+
+
         self.comboBox.currentIndexChanged.connect(self.combobox_slot)
         self.btn_recommendation.clicked.connect(self.btn_slot)
 
     def btn_slot(self):
         key_word = self.le_ketword.text()
-        recommendation = self.recommendation_by_keyword(key_word)
-        recommendation = '\n'.join(list(recommendation))
-        self.lbl_recommendation.setText(recommendation)
+        if key_word in self.titles:
+            recommendation = self.recommendatio_by_movie_title(key_word)
+        else:
+            recommendation = self.recommendation_by_keyword(key_word)
+            self.lbl_recommendation.setText(recommendation)
 
 
     def combobox_slot(self):
@@ -58,6 +68,7 @@ class Exam(QWidget, form_window):
         print(setence)
         setence_vec = self.Tfidf.transform([setence])
         cosine_sim = linear_kernel(setence_vec, self.Tfidf_matrix)
+        recommendation = '\n'.join(list(recommendation))
         recommendation = self.getRecommendation(cosine_sim)
         return recommendation
 
