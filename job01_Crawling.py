@@ -31,38 +31,61 @@ button_movie_xpath = '//*[@id="contents"]/section/div[4]/div[2]/div[1]/div[3]/di
 button_ok_xpath = '//*[@id="applyFilterButton"]'
 #각각의 버튼에 대한 XPath를 저장하고 있다.
 driver.get(start_url) #호출하여 접속하려는 웹 페이지로 이동
-time.sleep(0.5) #
+time.sleep(0.5) #너무 빠르면 에러가 나기 때문에 잠시 지연
 button_movie_tv = driver.find_element(By.XPATH, button_movie_tv_xpath)
+#해당하는 버튼 요소를 찾아, By.XPATH는 XPath를 사용하여 요소를 찾는 방법, 찾은 버튼 요소를 button 변수에 할당
 driver.execute_script('arguments[0].click();', button_movie_tv)
+#JavaScrip를 실행 movie_tv 요소를 클릭 이렇게 함으로써 해당 버튼을 클릭하는 작업
 time.sleep(0.5)
 button_movie = driver.find_element(By.XPATH, button_movie_xpath)
+#해당하는 버튼 요소를 찾아 Xpath를 사용 요소를 찾는 방법을 지정하는 역할, 찾은
 driver.execute_script('arguments[0].click();', button_movie)
-time.sleep(1)
+#JavaScript를 실행하여 button_movie 요소를 클릭 이렇게 함으로써 해당 버튼을 클릭하는 작업
+time.sleep(1)#웹 페이지 변화를 기다리기 위한 대기 시간 1초동안 지연
 button_ok = driver.find_element(By.XPATH, button_ok_xpath)
+#ok에 해당하는 버튼 요소를 찾고 XPATH를 사용하여 요소를 찾는 방법을 지정하는 역할
 driver.execute_script('arguments[0].click();', button_ok)
+#JavaScript를 실행하여 button_ok 요소를 클릭 해당 버튼을 클릭하는 작업을 수행
+
+#--웹 페이지에서 스크롤을 내리고 스크롤이 끝까지 도달할 때까지 일정 시간 동안 대기하는 작업--
 for i in range(25):
+    #25번 반복하는 루프(스크롤을 25번 내리는 작업)
     driver.execute_script("window.scrollTo(0, document.documentElement.scrollHeight);")
+    #JavaScript를 실행하여 현재 웹페이지의 끝까지 스크롤을 내리는 역할 0은 가로 스크롤 위치,
+     #scrollHeight 문서의 전체 높이를 나타낸다. 세로 스크롤을 문서의 전체 높이까지 내림
     time.sleep(1)
 list_review_url = []
 movie_titles = []
+#빈 리스트로 초기화 이후 코드에서 이 리스트에 데이터를 추가할 수 있다.
+
+#--웹 페이지에서 영화 리뷰의 URL과 영화 제목을 추출하는 작업을 수행하는 코드
 for i in range(1, 1000):
     base = driver.find_element(By.XPATH, f'//*[@id="contents"]/div/div/div[3]/div[2]/div[{i}]/a').get_attribute("href")
-    list_review_url.append(f"{base}/reviews")                                                          #속성 값을 읽어온다.
+    #XPath를 사용하여 웹 페이지에서 i에 해당하는 요소의 href 속성 값을 추출 base변수에 저장
+    #해당 요소의 링크 URL을 나타낸다. URL은 list_review 리스트에 추가된다.
+    list_review_url.append(f"{base}/reviews")#속성 값을 읽어온다.
+    #완전한 리뷰 URL을 생성하고 이를 list_review 리스트에 추가
     title = driver.find_element(By.XPATH, f'//*[@id="contents"]/div/div/div[3]/div[2]/div[{i}]/div/div[1]').text
+    #XPath를 사용하여 웹 페이지에서 i에 해당하는 요소의 텍스트 값을 추출하여 title 변수에 저장
     movie_titles.append(title)
+    #추출한 영화 제목을 movie 리스트에 추가
 
-print(list_review_url[:5])
-print(len(list_review_url))
-print(movie_titles[:5])
-print(len(movie_titles))
 
-reviews = []
+print(list_review_url[:5]) #리스트의 처음 5개 요소를 출력, URL중 처음 5개를 확인
+print(len(list_review_url)) #리스트의 길이 영화 리뷰 URL의 총 개수를 확인
+print(movie_titles[:5]) #영화 제목중 처음 5개를 확인
+print(len(movie_titles)) #리스트의 길이를 출력, 추출한 영화 제목의 총 개수를 확인
+
+reviews = [] #추출한 리뷰를 저장하는 용도로 사용
 for idx, url in enumerate(list_review_url[500:551]):
-    driver.get(url)
-    time.sleep(1)
-    review = ''
+    #리스트의 500번 인덱스부터 550번 인덱스까지의 요소를 순회하는 반복문
+    driver.get(url) #웹 드라이버를 사용하여 영화 리뷰 페이지를 불러오는 역할
+    time.sleep(1) #1초의 지연을 추가 페이지가 로드되는 동안 잠시 대기
+    review = '' #빈 문자열인 review를 생성 추출한 리뷰를 임시로 저장
     for i in range(1, 31):
+        #리뷰를 추출할 웹 페이지의 구조가 반복되는 패턴을 가지고 있다.
         review_title_xpath = '//*[@id="contents"]/div[2]/div[2]/div[{}]/div/div[3]/a[1]/div'.format(i)
+        #i 값을 이용하여 리뷰 제목의 XPath를 동적으로 생성
         review_more_xpath = '//*[@id="contents"]/div[2]/div[2]/div[{}]/div/div[3]/div/button'.format(i)
         try:
             review_more = driver.find_element(By.XPATH, review_more_xpath)
