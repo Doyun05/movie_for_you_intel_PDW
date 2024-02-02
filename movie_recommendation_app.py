@@ -55,7 +55,7 @@ class Exam(QWidget, form_window):
         print(setence)
         setence_vec = self.Tfidf.transform([setence])
         cosine_sim = linear_kernel(setence_vec, self.Tfidf_matrix)
-        recommendation = self.getRecommendation(cosine_sim
+        recommendation = self.getRecommendation(cosine_sim)
         return recommendation
 
 
