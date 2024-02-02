@@ -87,17 +87,23 @@ for idx, url in enumerate(list_review_url[500:551]):
         review_title_xpath = '//*[@id="contents"]/div[2]/div[2]/div[{}]/div/div[3]/a[1]/div'.format(i)
         #i 값을 이용하여 리뷰 제목의 XPath를 동적으로 생성
         review_more_xpath = '//*[@id="contents"]/div[2]/div[2]/div[{}]/div/div[3]/div/button'.format(i)
+        #i 값을 이용하여 "더보기" 버튼의 XPath를 생성하는 역할
         try:
             review_more = driver.find_element(By.XPATH, review_more_xpath)
+            #웹 드라이버를 사용하여 "더보기" 버튼 요소를 찾는다.
             driver.execute_script('arguments[0].click();', review_more)
+            #메서드를 사용하여 JavaScript를 실행하여 "더보기" 버튼을 클릭
             time.sleep(1)
             review_xpath = '//*[@id="contents"]/div[2]/div[1]/div/section[2]/div/div'
+            #해당 페이지에서 리뷰 내용을 가리키는 XPath를 생성하는 역할
             review = review + ' ' + driver.find_element(By.XPATH, review_xpath).text
-            driver.back()
+            #웹 드라이버를 사용하여 리뷰 내용을 추출하여 review변수에 추가, 리뷰의 내용이 하나의 문자열로 저장
+            driver.back() #이전 페이지로 돌아간다.
             time.sleep(1)
 
         except NoSuchElementException as e:
-            print('더보기', e)
+            #예외가 발생한 경우에 대한 예외 처리를 시작
+            print('더보기', e) #"더보기" 버튼을 찾지 못한 경우에 대한 오류 메세지를 출력
             try:
                 review = review + ' ' + driver.find_element(By.XPATH, review_title_xpath).text
             except:
