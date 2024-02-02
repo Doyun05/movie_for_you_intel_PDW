@@ -31,6 +31,9 @@ class Exam(QWidget, form_window):
 
     def btn_slot(self):
         key_word = self.le_ketword.text()
+        recommendation = self.recommendation_by_keyword(key_word)
+        recommendation = '\n'.join(list(recommendation))
+        self.lbl_recommendation.setText(recommendation)
 
 
     def combobox_slot(self):
