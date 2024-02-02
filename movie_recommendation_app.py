@@ -11,6 +11,7 @@ from PyQt5.QtCore import QStringListModel
 
 form_window = uic.loadUiType('./moive_recommendation.ui')[0]
 
+
 class Exam(QWidget, form_window):
     def __init__(self):
         super().__init__()
@@ -19,6 +20,60 @@ class Exam(QWidget, form_window):
         with open('./models/tfidf.pickle', 'rb') as f:
             self.Tfidf = pickle.load(f)
         self.embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')
+        self.df_reviews = pd.read_csv('./cleaned_one_review.csv')
+        self.titles = list(self.df_reviews['titles'])
+        self.titles.sort()
+        for title in self.titles:
+            self.comboBox.addItem(title)
+
+        self.comboBox.currentIndexChanged.connect(self.combobox_slot)
+        self.btn_recommendation.clicked.connect(self.btn_slot)
+
+    def btn_slot(self):
+        key_word = self.le_ketword.text()
+
+
+    def combobox_slot(self):
+        title = self.comboBox.currentText()
+        print(title)
+        recommendation = self.recommendatio_by_movie_title(title)
+        print('debug01')
+        self.lbl_recommendation.setText(recommendation)
+        print('debug02')
+
+    def recommendation_by_keyword(self, key_word):
+        sim_word = embedding_model.wv.most_similar(keyword, topn=10)
+        words = [key_word]
+        for word, _ in sim_word:
+            words.append(word)
+        setence = []
+        count = 10
+        for word in words:
+            setence = setence + [word] * count
+            count -= 1
+        setence = ' '.join(setence)
+        print(setence)
+        setence_vec = self.Tfidf.transform([setence])
+        cosine_sim = linear_kernel(setence_vec, self.Tfidf_matrix)
+        recommendation = self.getRecommendation(cosine_sim
+        return recommendation
+
+
+    def recommendatio_by_movie_title(self, title):
+        movie_idx = self.df_reviews[self.df_reviews['titles'] == title].index
+        cosine_sim = linear_kernel(self.Tfidf_matrix[movie_idx], self.Tfidf_matrix)
+        recommendation = self.getRecommendation(cosine_sim)
+        recommendation = '\n'.join(list(recommendation))
+        return recommendation
+
+    def getRecommendation(self, cosine_sim):
+        simScore = list(enumerate(cosine_sim[-1]))
+        simScore = sorted(simScore, key=lambda x: x[1], reverse=True)
+        simScore = simScore[:11]
+        movieIdx = [i[0] for i in simScore]
+        recmovieList = self.df_reviews.iloc[movieIdx, 0]
+
+        return recmovieList[1:]
 
 
 if __name__ == '__main__':
