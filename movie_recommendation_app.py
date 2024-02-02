@@ -43,7 +43,6 @@ class Exam(QWidget, form_window):
             recommendation = self.recommendatio_by_movie_title(key_word)
         else:
             recommendation = self.recommendation_by_keyword(key_word)
-
         if recommendation:
             self.lbl_recommendation.setText(recommendation)
 
