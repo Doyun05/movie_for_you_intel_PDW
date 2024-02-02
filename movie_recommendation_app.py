@@ -33,9 +33,9 @@ class Exam(QWidget, form_window):
         self.le_keyword.setCompleter(completer)
 
 
-
         self.comboBox.currentIndexChanged.connect(self.combobox_slot)
         self.btn_recommendation.clicked.connect(self.btn_slot)
+
 
     def btn_slot(self):
         key_word = self.le_ketword.text()
@@ -43,7 +43,9 @@ class Exam(QWidget, form_window):
             recommendation = self.recommendatio_by_movie_title(key_word)
         else:
             recommendation = self.recommendation_by_keyword(key_word)
+        if recommendation:
             self.lbl_recommendation.setText(recommendation)
+
 
 
     def combobox_slot(self):
@@ -55,7 +57,11 @@ class Exam(QWidget, form_window):
         print('debug02')
 
     def recommendation_by_keyword(self, key_word):
-        sim_word = self.embedding_model.wv.most_similar(key_word, topn=10)
+        try:
+            sim_word = self.embedding_model.wv.most_similar(key_word, topn=10)
+        except:
+            self.lbl_recommendation.setText('제가 모르는 단어 입니다.')
+            return 0
         words = [key_word]
         for word, _ in sim_word:
             words.append(word)
